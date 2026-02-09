@@ -15,6 +15,13 @@ El verano trae calor y largos días soleados.
 - vino tinto
 - frutas de temporada
 
+### Lista numerada
+
+1. pan fresco
+2. queso de cabra
+3. vino tinto
+4. frutas de temporada
+
 ## Código de ejemplo
 
 ```python

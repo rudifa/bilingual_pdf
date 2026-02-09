@@ -15,6 +15,13 @@ L'été apporte la chaleur et les longues journées ensoleillées.
 - Vin rouge
 - Fruits de saison
 
+### Liste numérotée
+
+1. Pain frais
+2. Fromage de chèvre
+3. Vin rouge
+4. Fruits de saison
+
 ## Code exemple
 
 ```python

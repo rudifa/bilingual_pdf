@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"path/filepath"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -111,8 +112,21 @@ func validateArgs(args []string) (string, error) {
 	}
 	inputFile := args[0]
 
+	if ext := filepath.Ext(inputFile); ext != ".md" {
+		return "", fmt.Errorf("input file must have .md extension, got %q", ext)
+	}
 	if _, err := os.Stat(inputFile); os.IsNotExist(err) {
 		return "", fmt.Errorf("input file not found: %s", inputFile)
+	}
+	if translationFile != "" {
+		if ext := filepath.Ext(translationFile); ext != ".md" {
+			return "", fmt.Errorf("--translation file must have .md extension, got %q", ext)
+		}
+	}
+	if outputFile != "" {
+		if ext := filepath.Ext(outputFile); ext != ".pdf" {
+			return "", fmt.Errorf("--output file must have .pdf extension, got %q", ext)
+		}
 	}
 	if err := languages.Validate(sourceLang); err != nil {
 		return "", fmt.Errorf("invalid source language: %w", err)
