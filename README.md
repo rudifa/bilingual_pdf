@@ -9,10 +9,12 @@ Converts a markdown document into a side-by-side bilingual PDF with the source l
 bilingual_pdf my_doc.md
 
 # Spanish → French
-bilingual_pdf mi_doc.md --source es --target fr
+bilingual_pdf mi_doc.md \
+    --source es --target fr
 
 # English → German
-bilingual_pdf my_doc.md --source en --target de
+bilingual_pdf my_doc.md \
+    --source en --target de
 ```
 
 ## Installation
@@ -20,11 +22,12 @@ bilingual_pdf my_doc.md --source en --target de
 1. download the zip file appropriate for your platform from the [Releases](https://github.com/rudifa/bilingual-cd/releases/latest) page
 2. unzip and move the `bilingual_pdf` executable into a directory which is on your system PATH
 3. if needed, handle the security settings for the executable `bilingual_pdf`
-   - on a Mac, you may need to run
 
-     ```bash
-     xattr -d com.apple.quarantine /path/to/bilingual_pdf
-     ```
+On a Mac computer, you can allow running the app by removing the quarantine attribute:
+
+```bash
+xattr -d com.apple.quarantine /path/to/bilingual_pdf
+```
 
 ## Usage
 
@@ -33,27 +36,35 @@ bilingual_pdf my_doc.md --source en --target de
 bilingual_pdf document.md
 
 # Any language pair
-bilingual_pdf document.md --source en --target de
+bilingual_pdf document.md \
+    --source en --target de
 
 # Use a pre-translated markdown file
-bilingual_pdf document.md --translation document_es.md
+bilingual_pdf document.md \
+    --translation document_es.md
 
 # Specify output filename
-bilingual_pdf document.md -o bilingual.pdf
+bilingual_pdf document.md \
+    -o bilingual.pdf
 
-# Choose font size (small, medium, or large; default: medium)
-bilingual_pdf document.md --font-size small
+# Choose font size:
+# small, medium (default), or large
+bilingual_pdf document.md \
+    --font-size small
 
-# Also save the intermediate HTML (useful for debugging)
+# Also save the intermediate HTML
+# (useful for debugging)
 bilingual_pdf document.md --html
 
 # Get full help
 bilingual_pdf --help
 
 # Also save the translation markdown
-bilingual_pdf document.md --save-translation
+bilingual_pdf document.md \
+    --save-translation
 
-# List of principal supported language codes (for --source and --target)
+# List of supported language codes
+# (for --source and --target)
 bilingual_pdf --list-languages
 
 ```
@@ -69,12 +80,14 @@ The input markdown should contain simple text, optionally formatted with heading
 
 ## Section
 
-A paragraph of text. Multiple lines in the source
-are joined into a single paragraph.
+A paragraph of text. Multiple lines
+in the source are joined into a single
+paragraph.
 
 Another paragraph, separated by a blank line.
 
-A web link example: [OpenAI](https://www.openai.com)
+A web link:
+[OpenAI](https://www.openai.com)
 ```
 
 The app does not support more complex markdown features, notably tables and images.
@@ -84,35 +97,39 @@ The app does not support more complex markdown features, notably tables and imag
 If you prefer hand-edited translations over machine translation, provide a pre-translated markdown file with the **same structure** (same number and order of headings and paragraphs) as the source:
 
 ```bash
-bilingual_pdf source_fr.md --translation source_es.md
+bilingual_pdf source_fr.md \
+    --translation source_es.md
 ```
 
 The app warns if the block counts don't match and pads the shorter side with empty cells.
 
-## How it works
+## For developers only
+
+### How it works
 
 1. **Parse** the input markdown into structural blocks (headings and paragraphs)
 2. **Translate** each block to the target language (automatically via Google Translate, or using a pre-translated file you supply)
 3. **Render** a 2-column HTML table where each row pairs a source block with its translated counterpart
 4. **Convert** the HTML to an A4 PDF
 
-## For developers only
+### Build, test and deploy
 
-Use the go build, test and deployment commands or use the `Makefile` targets.
+Use the go build, test and install commands or use the `Makefile` targets.
 
 Use the resulting `bilingual_pdf` CLI tool to run the app on the sample markdown files in `testdata/`. The generated PDFs and intermediate HTML files are saved in the same directory. You can inspect these to understand how the app works and to debug any issues.
 
 Run `.scripts/smoketest.sh` to verify that the app runs successfully with valid arguments and that it fails with invalid arguments.
 
-
 ```bash
+# quick tests without network access
+./.scripts/smoketest.sh
 
-./.scripts/smoketest.sh # quick tests without network access
+# include tests using the translation API
+./.scripts/smoketest.sh --full
 
-./.scripts/smoketest.sh --full # all tests, including those that use the translation API
+# keep generated files for inspection
+./.scripts/smoketest.sh --full --keep
 
-./.scripts/smoketest.sh --full --keep # keep generated files for inspection after the test run
-
-./.scripts/smoketest.sh --clean # remove generated files
-
+# remove generated files
+./.scripts/smoketest.sh --clean
 ```
