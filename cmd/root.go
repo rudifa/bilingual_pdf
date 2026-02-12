@@ -199,7 +199,7 @@ func translateWithGoogle(blocks []parser.Block) ([]parser.Block, error) {
 		case parser.BlockHTML:
 			// send raw HTML to Google Translate (it preserves tags)
 			texts[i] = b.Raw
-		case parser.BlockParagraph:
+		case parser.BlockParagraph, parser.BlockList:
 			// send raw markdown so inline syntax ([links](url), **bold**) is preserved
 			texts[i] = b.Raw
 		default:
@@ -342,21 +342,8 @@ func reconstructMarkdown(sourceBlock parser.Block, translatedText string) string
 	case parser.BlockThematicBreak:
 		return "---"
 	case parser.BlockList:
-		items := strings.Split(strings.TrimRight(translatedText, "\n"), "\n")
-		isOrdered := len(sourceBlock.Raw) > 0 && sourceBlock.Raw[0] >= '1' && sourceBlock.Raw[0] <= '9'
-		var buf strings.Builder
-		for i, item := range items {
-			item = strings.TrimSpace(item)
-			if item == "" {
-				continue
-			}
-			if isOrdered {
-				buf.WriteString(fmt.Sprintf("%d. %s\n", i+1, item))
-			} else {
-				buf.WriteString("- " + item + "\n")
-			}
-		}
-		return buf.String()
+		// translated text already contains list markers and inline markdown (links, etc.)
+		return translatedText
 	default:
 		return translatedText
 	}

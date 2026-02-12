@@ -216,18 +216,33 @@ func extractList(list *ast.List, source []byte) (text, raw string) {
 			continue
 		}
 		itemText := collectText(child, source)
+		itemContent := extractListItemContent(child, source)
 		textBuf.WriteString(itemText)
 		textBuf.WriteString("\n")
 
 		if list.IsOrdered() {
-			rawBuf.WriteString(fmt.Sprintf("%d. %s\n", idx, itemText))
+			rawBuf.WriteString(fmt.Sprintf("%d. %s\n", idx, itemContent))
 			idx++
 		} else {
-			rawBuf.WriteString("- " + itemText + "\n")
+			rawBuf.WriteString("- " + itemContent + "\n")
 		}
 	}
 
 	return strings.TrimRight(textBuf.String(), "\n"), rawBuf.String()
+}
+
+// extractListItemContent gets the original source content from a list item's
+// children, preserving inline markdown syntax (links, emphasis, etc.).
+func extractListItemContent(item ast.Node, source []byte) string {
+	var buf bytes.Buffer
+	for child := item.FirstChild(); child != nil; child = child.NextSibling() {
+		lines := child.Lines()
+		for i := 0; i < lines.Len(); i++ {
+			seg := lines.At(i)
+			buf.Write(seg.Value(source))
+		}
+	}
+	return strings.TrimRight(buf.String(), "\n")
 }
 
 // extractBlockquote extracts text and raw markdown from a blockquote node.

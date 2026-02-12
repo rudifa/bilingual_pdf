@@ -26,7 +26,8 @@ bilingual_pdf my_doc.md \
 On a Mac computer, you can allow running the app by removing the quarantine attribute:
 
 ```bash
-xattr -d com.apple.quarantine /path/to/bilingual_pdf
+xattr -d com.apple.quarantine \
+    /path/to/bilingual_pdf
 ```
 
 ## Usage

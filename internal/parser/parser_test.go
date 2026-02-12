@@ -277,6 +277,33 @@ func TestParse_ListRoundTrip(t *testing.T) {
 	}
 }
 
+func TestParse_LinkInListItem(t *testing.T) {
+	source := []byte("1. download from the [Releases](https://github.com/example/releases) page\n2. unzip the file\n")
+
+	blocks, err := Parse(source)
+	if err != nil {
+		t.Fatalf("Parse failed: %v", err)
+	}
+	if len(blocks) != 1 {
+		t.Fatalf("expected 1 block, got %d", len(blocks))
+	}
+
+	b := blocks[0]
+	if b.Kind != BlockList {
+		t.Errorf("expected List, got %v", b.Kind)
+	}
+
+	// Raw should preserve the markdown link syntax
+	if !strings.Contains(b.Raw, "[Releases](https://github.com/example/releases)") {
+		t.Errorf("Raw should preserve markdown link syntax, got %q", b.Raw)
+	}
+
+	// HTML should render the link as an <a> tag
+	if !strings.Contains(b.HTML, `<a href="https://github.com/example/releases">Releases</a>`) {
+		t.Errorf("HTML should contain <a> tag with href, got %q", b.HTML)
+	}
+}
+
 func TestParse_SampleFile(t *testing.T) {
 	source, err := os.ReadFile("../../testdata/sample.fr.md")
 	if err != nil {
